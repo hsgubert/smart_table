@@ -1,9 +1,6 @@
 module SmartTable
   module SmartTableHelper
 
-    # include Kaminari helpers, like paginate
-    include Kaminari::Helpers::HelperMethods
-
     # Renders pagination controls (centered, usually below the table). Usage:
     #
     #   <%= smart_table_paginate @records, @total_records_count, Record.model_name.human %>
