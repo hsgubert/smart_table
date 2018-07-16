@@ -1,0 +1,85 @@
+
+ul.pagination {
+ display: inline-block;
+ padding-left: 0;
+ margin: 10px 0;
+ border-radius: 4px;
+
+ // Pagination buttons
+ &>a {
+   position: relative;
+   float: left;
+   line-height: 1.428571429;
+   padding: 6px 12px;
+   text-decoration: none;
+   color: #616161;
+   background-color: white;
+   border: 1px solid #dddddd;
+   margin-left: -1px;
+
+   // First pagination button
+   &:first-child {
+    margin-left: 0;
+    border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+   }
+
+   // Last pagination button
+   &:last-child {
+    margin-left: 0;
+    border-bottom-right-radius: 4px;
+    border-top-right-radius: 4px;
+   }
+
+   // Currently selected button
+   &.current {
+    z-index: 2;
+    color: white;
+    background-color: #616161;
+    border-color: #616161;
+    cursor: default;
+   }
+
+   // currently hovered button (except if selected)
+   &:hover:not(.current) {
+    color: #245151;
+    background-color: #eeeeee;
+    border-color: #dddddd;
+   }
+
+   // links inside buttons {
+   &>a {
+
+   }
+ }
+}
+
+// style for a pretty text field
+@mixin smart_table_text_field {
+  height: 34px;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.428571429;
+  color: #555555;
+  background-color: white;
+  background-image: none;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+}
+
+// search field: right aligned
+.smart_table_search {
+  @include smart_table_text_field;
+  float: right;
+}
+
+.smart_table_extra_filters {
+  // text fields and select boxes inside extra filters
+  input[type="text"], select {
+    @include smart_table_text_field;
+  }
+}
+
+.text-center {
+  text-align: center;
+}

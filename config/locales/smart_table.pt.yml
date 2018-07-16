@@ -1,0 +1,25 @@
+pt:
+  views:
+    # Kaminari translations
+    pagination:
+      first: "&laquo; Primeira"
+      last: "Última &raquo;"
+      previous: "&lsaquo; Anterior"
+      next: "Próxima &rsaquo;"
+      truncate: "&hellip;"
+  helpers:
+    # Kaminari translations
+    page_entries_info:
+      one_page:
+        display_entries:
+          zero: "Sem %{entry_name} para exibir"
+          one: "Mostrando <b>1</b> %{entry_name}"
+          other: "Mostrando <b>todos %{count}</b> %{entry_name}"
+      more_pages:
+        display_entries: "Mostrando %{entry_name} <b>%{first}&nbsp;-&nbsp;%{last}</b> de <b>%{total}</b> no total"
+
+  # smart_table gem's specific translations
+  smart_table:
+    per_page: "por página"
+    show_all: "Tudo"
+    search: "Buscar"
