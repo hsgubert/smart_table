@@ -23,6 +23,9 @@ SmartTable uses both JS and CSS, that must be included in your app's asset pipel
 //= require smart_table
 
 // Add this to your application.scss or vendor.scss
+// smart_table uses font-awesome for the sorting icons, so make sure you require
+// font-awesome first
+*= require font-awesome
 *= require smart_table
 ```
 
