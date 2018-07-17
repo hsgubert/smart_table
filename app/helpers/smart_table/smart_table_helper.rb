@@ -109,7 +109,8 @@ module SmartTable
 
       page_sizes = PAGE_SIZES.dup
       page_sizes << get_cached_smart_table_params.page_size.to_i if get_cached_smart_table_params.page_size
-      page_sizes.uniq!.sort!
+      page_sizes.uniq!
+      page_sizes.sort!
 
       if page_sizes.last >= total_records_count || get_cached_smart_table_params.page_size.nil?
         page_sizes.reject! {|size| size > total_records_count}
