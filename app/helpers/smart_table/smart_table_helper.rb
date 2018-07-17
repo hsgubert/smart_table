@@ -34,7 +34,7 @@ module SmartTable
 
       html_elements << content_tag(:div, class: 'text-center') do
         # call to Kaminari view helper
-        page_entries_info(paginatable_array, entry_name: record_model_name.downcase)
+        page_entries_info(paginatable_array, entry_name: record_model_name.pluralize.downcase)
       end
 
       html_elements.join.html_safe
@@ -109,7 +109,7 @@ module SmartTable
 
       page_sizes = PAGE_SIZES.dup
       page_sizes << get_cached_smart_table_params.page_size.to_i if get_cached_smart_table_params.page_size
-      page_sizes.sort!
+      page_sizes.uniq!.sort!
 
       if page_sizes.last >= total_records_count || get_cached_smart_table_params.page_size.nil?
         page_sizes.reject! {|size| size > total_records_count}
