@@ -133,3 +133,12 @@ The following snippet shows how to use different input types to make custom filt
   <%= radio_button_tag("category", "java", params["category"] == 'java') %>
 <% end %>
 ```
+
+### Setting Up Defaults
+```ruby
+  smart_table_params = smart_table_params(
+    initial_page_size: 20,
+    initial_sort_attribute: :name,
+    initial_sort_order: :desc
+  )
+```

@@ -26,11 +26,16 @@ module SmartTable
       end
     end
 
-    def smart_table_params(initial_page_size: 25)
+    def smart_table_params(initial_page_size: 25, initial_sort_attribute: nil, initial_sort_order: :asc)
       return @st_params if @st_params
 
       @st_params = Params.new
+
       @st_params.sort = params[SORT_PARAM]
+      if @st_params.sort.nil? && initial_sort_attribute
+        @st_params.sort = "#{initial_sort_attribute} #{initial_sort_order}"
+      end
+
       @st_params.search = params[SEARCH_PARAM]
       @st_params.page_size = params[PAGE_SIZE_PARAM] || initial_page_size
       if @st_params.page_size == SHOW_ALL

@@ -23,7 +23,7 @@ module SmartTable
       raise 'smart_table_params must be called on the controller, before using smart_table_paginate helper' unless get_cached_smart_table_params
 
       paginatable_array = Kaminari.
-        paginate_array(records, total_count: total_records_count).
+        paginate_array(records.to_a, total_count: total_records_count).
         page(get_cached_smart_table_params.page_number).
         per(get_cached_smart_table_params.page_size)
 
@@ -126,7 +126,7 @@ module SmartTable
               page_size.to_s
             else
               human_page_size = (page_size == SHOW_ALL ? I18n.t('smart_table.show_all') : page_size.to_s)
-              link_to human_page_size, current_request_url_with_merged_query_params(PAGE_SIZE_PARAM => page_size)
+              link_to human_page_size, current_request_url_with_merged_query_params(PAGE_SIZE_PARAM => page_size, PAGE_PARAM => 1)
             end
           end.join(' ')
         ).html_safe

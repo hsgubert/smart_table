@@ -6,7 +6,7 @@ ul.pagination {
  border-radius: 4px;
 
  // Pagination buttons
- &>a {
+ &>a, &>span.gap {
    position: relative;
    float: left;
    line-height: 1.428571429;
