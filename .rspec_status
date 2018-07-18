@@ -1,16 +1,16 @@
 example_id                                                                     | status  | run_time        |
 ------------------------------------------------------------------------------ | ------- | --------------- |
-./spec/smart_table/app/controllers/concerns/smart_table_concern_spec.rb[1:1:1] | passed  | 0.00277 seconds |
-./spec/smart_table/app/controllers/concerns/smart_table_concern_spec.rb[1:1:2] | passed  | 0.0004 seconds  |
-./spec/smart_table/app/controllers/concerns/smart_table_concern_spec.rb[1:1:3] | passed  | 0.0003 seconds  |
-./spec/smart_table/app/controllers/concerns/smart_table_concern_spec.rb[1:1:4] | passed  | 0.00023 seconds |
-./spec/smart_table/app/controllers/concerns/smart_table_concern_spec.rb[1:1:5] | passed  | 0.00019 seconds |
-./spec/smart_table/app/controllers/concerns/smart_table_concern_spec.rb[1:1:6] | passed  | 0.0002 seconds  |
-./spec/smart_table/app/controllers/concerns/smart_table_concern_spec.rb[1:1:7] | passed  | 0.00025 seconds |
-./spec/smart_table/app/helpers/smart_table_helper_spec.rb[1:1:1]               | pending | 0.00094 seconds |
-./spec/smart_table/lib/config_spec.rb[1:1:1]                                   | passed  | 0.00024 seconds |
+./spec/smart_table/app/controllers/concerns/smart_table_concern_spec.rb[1:1:1] | passed  | 0.00935 seconds |
+./spec/smart_table/app/controllers/concerns/smart_table_concern_spec.rb[1:1:2] | passed  | 0.00049 seconds |
+./spec/smart_table/app/controllers/concerns/smart_table_concern_spec.rb[1:1:3] | passed  | 0.00029 seconds |
+./spec/smart_table/app/controllers/concerns/smart_table_concern_spec.rb[1:1:4] | passed  | 0.00025 seconds |
+./spec/smart_table/app/controllers/concerns/smart_table_concern_spec.rb[1:1:5] | passed  | 0.00031 seconds |
+./spec/smart_table/app/controllers/concerns/smart_table_concern_spec.rb[1:1:6] | passed  | 0.00022 seconds |
+./spec/smart_table/app/controllers/concerns/smart_table_concern_spec.rb[1:1:7] | passed  | 0.00021 seconds |
+./spec/smart_table/app/helpers/smart_table_helper_spec.rb[1:1:1]               | pending | 0.00038 seconds |
+./spec/smart_table/lib/config_spec.rb[1:1:1]                                   | passed  | 0.0002 seconds  |
 ./spec/smart_table/lib/engine_spec.rb[1:1:1]                                   | passed  | 0.00028 seconds |
-./spec/smart_table_spec.rb[1:1]                                                | passed  | 0.00079 seconds |
-./spec/smart_table_spec.rb[1:2]                                                | passed  | 0.00028 seconds |
+./spec/smart_table_spec.rb[1:1]                                                | passed  | 0.00146 seconds |
+./spec/smart_table_spec.rb[1:2]                                                | passed  | 0.00043 seconds |
 ./spec/smart_table_spec.rb[1:3]                                                | passed  | 0.00018 seconds |
-./spec/smart_table_spec.rb[1:4:1]                                              | passed  | 0.0002 seconds  |
+./spec/smart_table_spec.rb[1:4:1]                                              | passed  | 0.00019 seconds |

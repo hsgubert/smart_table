@@ -25,7 +25,7 @@ module SmartTable
       paginatable_array = Kaminari.
         paginate_array(records.to_a, total_count: total_records_count).
         page(get_cached_smart_table_params.page_number).
-        per(get_cached_smart_table_params.page_size)
+        per(get_cached_smart_table_params.page_size || 99999999) # kaminari needs a page size. If you pass nil it will use the default. So we use a very big number to represent no limit
 
       html_elements = []
 
@@ -112,20 +112,21 @@ module SmartTable
       page_sizes.uniq!
       page_sizes.sort!
 
-      if page_sizes.last >= total_records_count || get_cached_smart_table_params.page_size.nil?
+      if page_sizes.last >= total_records_count
         page_sizes.reject! {|size| size > total_records_count}
-        page_sizes << SHOW_ALL
       end
+      
+      page_sizes << SHOW_ALL
 
       content_tag(:div, class: 'text-center') do
         (
           record_model_name.pluralize + ' ' +
           I18n.t('smart_table.per_page') + ': ' +
           page_sizes.map do |page_size|
-            if page_size == get_cached_smart_table_params.page_size
-              page_size.to_s
+            human_page_size = (page_size == SHOW_ALL ? I18n.t('smart_table.show_all') : page_size.to_s)
+            if page_size == get_cached_smart_table_params.page_size || page_size == SHOW_ALL && get_cached_smart_table_params.page_size.nil?
+              human_page_size
             else
-              human_page_size = (page_size == SHOW_ALL ? I18n.t('smart_table.show_all') : page_size.to_s)
               link_to human_page_size, current_request_url_with_merged_query_params(PAGE_SIZE_PARAM => page_size, PAGE_PARAM => 1)
             end
           end.join(' ')
