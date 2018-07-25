@@ -127,6 +127,7 @@ SmartTable.ajaxUpdate = function(url, replaceableElementSelector) {
   // makes AJAX get request
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url);
+  xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest"); // so rails knows it is ajax request using request.xhr?
   xhr.onload = function() {
       if (xhr.status === 200) {
           // parses response
