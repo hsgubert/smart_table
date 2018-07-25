@@ -142,3 +142,52 @@ The following snippet shows how to use different input types to make custom filt
     initial_sort_order: :desc
   )
 ```
+
+### Ajax Updates
+
+In its normal mode, smart_table works by refreshing the page with different url query parameters. The main advantage of this method, is that the url completely determines the state of the table in the page, and you can easily share the url with someone else and they will have the view of the same page with the same sorting and so on (you can't guarantee the table content will be the same though, as it depends on your data source).
+
+On the other hand, this has the side-effect of refreshing the rest of the page, wiping out all the eventual state you have in your DOM, what might be a problem depending on how your app is structured. The solution to this problem is to refresh only the part of your page that must be refreshed when the user interacts with the smart_table.
+
+To enable all the links related to the smart_table to generate AJAX requests, set the following option in your controller:
+```ruby
+  smart_table_params = smart_table_params(
+    remote: true,
+    ...
+  )
+```
+
+Then in your view, use the following helper to enclose everything that must be update when the user changes a page, changes page size or does some search:
+```html
+<h1>Users</h1>
+
+<div><%= smart_table_search %></div>
+
+<%= smart_table_remote_updatable_content do %>
+  <table class='table'>
+    ...
+  </table>
+
+  <%= smart_table_paginate @current_page_users, @total_users_count, User.model_name.human %>
+  <%= smart_table_page_size_selector @total_user_count, User.model_name.human %>
+<% end %>
+```
+
+Usually, all you need to enclose in this scope is the table and the pagination controls.
+
+If you want, you can prevent the controller of rendering the view inside the layout when the request is xhr, this will spare your server some work, as the only part of the page that is actually necessary for it to render is the one enclosed by the `smart_table_remote_updatable_content` helper.
+
+smart_table will automatically identify the content to be updated and replace that part of the page by the new content. Sometimes you need to execute some javascript after replacing this content (`<script>` tags inside the replaced content will not run automatically!). In this case, use the `smart_table:ajax_update` event that is triggered on the document, as showed below:
+```javascript
+  $(document).on('smart_table:ajax_update', function(event) {
+    var replacedElementSelector = event.detail.replacedElementSelector;
+    // do whatever you need to do
+  });
+```
+
+Usually you have to setup event listeners on your table content, both after initial rendering and after an ajax update. In this case, just do your setup both on document ready and after the ajax update event:
+```javascript
+$(document).on('ready smart_table:ajax_update', function(event) {
+  // do whatever here
+});
+```

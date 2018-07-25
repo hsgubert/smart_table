@@ -30,7 +30,11 @@ module SmartTable
       html_elements = []
 
       # call to Kaminari view helper
-      html_elements << paginate(paginatable_array, param_name: PAGE_PARAM, theme: "smart_table")
+      html_elements << paginate(paginatable_array,
+        param_name: PAGE_PARAM,
+        theme: 'smart_table',
+        remote: get_cached_smart_table_params.remote
+      )
 
       html_elements << content_tag(:div, class: 'text-center') do
         # call to Kaminari view helper
@@ -71,7 +75,7 @@ module SmartTable
       end
 
       link_url = current_request_url_with_merged_query_params(SORT_PARAM => "#{attribute} #{next_sort_order}")
-      link_to link_url do
+      link_to link_url, class: 'smart-table-link', data: {smart_table_remote_link: (true if get_cached_smart_table_params.remote)} do
         text.html_safe + ' ' + (
           if current_sort_attribute == attribute && current_sort_order == 'asc'
             "<span class='fa fa-sort-down'></span>".html_safe
@@ -115,7 +119,7 @@ module SmartTable
       if page_sizes.last >= total_records_count
         page_sizes.reject! {|size| size > total_records_count}
       end
-      
+
       page_sizes << SHOW_ALL
 
       content_tag(:div, class: 'text-center') do
@@ -127,7 +131,12 @@ module SmartTable
             if page_size == get_cached_smart_table_params.page_size || page_size == SHOW_ALL && get_cached_smart_table_params.page_size.nil?
               human_page_size
             else
-              link_to human_page_size, current_request_url_with_merged_query_params(PAGE_SIZE_PARAM => page_size, PAGE_PARAM => 1)
+              link_to(
+                human_page_size,
+                current_request_url_with_merged_query_params(PAGE_SIZE_PARAM => page_size, PAGE_PARAM => 1),
+                class: 'smart-table-link',
+                data: {smart_table_remote_link: (true if get_cached_smart_table_params.remote)}
+              )
             end
           end.join(' ')
         ).html_safe
@@ -163,7 +172,7 @@ module SmartTable
       text_field_tag(
         SEARCH_PARAM,
         get_cached_smart_table_params.search,
-        type: 'search', placeholder: I18n.t('smart_table.search'), class: 'smart_table_search', id: 'smart_table_search'
+        type: 'search', placeholder: I18n.t('smart_table.search'), class: 'smart_table_search'
       )
     end
 
@@ -193,6 +202,39 @@ module SmartTable
         id: 'smart_table_extra_filters',
         class: 'smart_table_extra_filters'
       )
+    end
+
+    # Delimits part of the page to me replaced via AJAX requests when smart_table
+    # is configured with option 'remote: true'. Usage:
+    #
+    # In controller:
+    #   smart_table_params = smart_table_params(
+    #     remote: true,
+    #     ...
+    #   )
+    #
+    # In views
+    #   <%= smart_table_remote_updatable_content do %>
+    #     ...
+    #   <% end %>
+    #
+    # smart_table will automatically replace the content within this block with
+    # the content of the corresponding block within the response of the AJAX request
+
+    def smart_table_remote_updatable_content(&block)
+      raise 'smart_table_params must be called on the controller, before using smart_table_remote_updatable_content helper' unless get_cached_smart_table_params
+
+      content = capture(&block)
+
+      # only encloses content in span if remote update is enabled
+      if get_cached_smart_table_params.remote
+        content_tag(:span,
+          content,
+          class: 'smart_table_remote_updatable_content'
+        )
+      else
+        content
+      end
     end
 
   private

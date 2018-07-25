@@ -8,7 +8,7 @@ module SmartTable
     end
 
     class Params
-      attr_accessor :sort, :page_size, :page_number, :search
+      attr_accessor :sort, :page_size, :page_number, :search, :remote
 
       def initialize
         self.sort = nil
@@ -26,10 +26,11 @@ module SmartTable
       end
     end
 
-    def smart_table_params(initial_page_size: 25, initial_sort_attribute: nil, initial_sort_order: :asc)
+    def smart_table_params(initial_page_size: 25, initial_sort_attribute: nil, initial_sort_order: :asc, remote: false)
       return @st_params if @st_params
 
       @st_params = Params.new
+      @st_params.remote = remote
 
       @st_params.sort = params[SORT_PARAM]
       if @st_params.sort.nil? && initial_sort_attribute

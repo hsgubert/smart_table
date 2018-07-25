@@ -7,9 +7,12 @@ var SmartTable = function() {
 SmartTable.onPageLoad = function(callback){
     // modern browsers
     if (document.addEventListener) {
-      document.addEventListener('DOMContentLoaded', callback);
-      document.addEventListener("turbolinks:load", callback); // Turbolinks 5
-      document.addEventListener("page:load", callback); // Turbolinks classic
+      if (typeof Turbolinks !== 'undefined') {
+        document.addEventListener("turbolinks:load", callback); // Turbolinks 5
+        document.addEventListener("page:load", callback); // Turbolinks classic
+      } else {
+        document.addEventListener('DOMContentLoaded', callback);
+      }
     }
     // IE <= 8
     else {
@@ -19,10 +22,29 @@ SmartTable.onPageLoad = function(callback){
     }
 };
 
-// On page load, we setup search field and extra filters
-SmartTable.onPageLoad(function() {
-  SmartTable.setupSmartTableSearch();
-  SmartTable.setupSmartTableExtraFilters();
+// make the initial setup of smart table links, filters, search, scoped under the
+// selector parameter. If no selector parameter is passed, make the setup on the
+// whole document
+SmartTable.setupSmartTableInScope = function(selector) {
+  var scopeElement;
+  if (typeof selector == 'undefined') {
+    scopeElement = document;
+  } else {
+    scopeElement = document.querySelector(selector);
+  }
+  if (scopeElement == null) {
+    return;
+  }
+
+  // call individual setup methods
+  SmartTable.setupSmartTableSearch(scopeElement);
+  SmartTable.setupSmartTableExtraFilters(scopeElement);
+  SmartTable.setupRemoteTableUpdate(scopeElement);
+}
+
+// On page load, we setup all JS elements on the whole document
+SmartTable.onPageLoad(function(event) {
+  SmartTable.setupSmartTableInScope();
 })
 
 // Gets the current page url and merges some query parameters to this url. If a
@@ -84,14 +106,75 @@ SmartTable.refreshPageWithParam = function(key, value) {
     params[key] = null;
   }
 
-  // makes the request
-  window.location = SmartTable.currentUrlWithMergedQueryParams(params);
+  // if there is section to be updated dynamically, does AJAX request, otherwise
+  // just makes the browser load the new page
+  var url = SmartTable.currentUrlWithMergedQueryParams(params);
+  if (!!document.querySelector('.smart_table_remote_updatable_content')) {
+    SmartTable.ajaxUpdate(url, '.smart_table_remote_updatable_content');
+  } else {
+    window.location = url;
+  }
+}
+
+// Updates table via ajax.
+// 1) Does XHR HTTP GET to get new content
+// 2) Uses replaceableElementSelector to select the element to be replaced in the current DOM,
+//    by the element with the same selector in the received content
+// 3) Replaces current browser url (necessary for smart_table to work properly)
+// 4) Fires the "smart_table:ajax_update" event on the document, with the newly
+// added element as target
+SmartTable.ajaxUpdate = function(url, replaceableElementSelector) {
+  // makes AJAX get request
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url);
+  xhr.onload = function() {
+      if (xhr.status === 200) {
+          // parses response
+          var domParser = new DOMParser();
+          var receivedDocument = domParser.parseFromString(xhr.responseText, "text/html");
+          var replacingElement = receivedDocument.querySelector(replaceableElementSelector);
+          if (replacingElement == null) {
+            console.log("smart_table: element with selector '" + replaceableElementSelector + "' not found in xhr response");
+            return;
+          }
+
+          // finds element to be replaced
+          var replacedElement = document.querySelector(replaceableElementSelector);
+          if (replacedElement == null) {
+            console.log("smart_table: element with selector '" + replaceableElementSelector + "' not found in current document");
+            return;
+          }
+
+          // replaces element
+          replacedElement.parentNode.replaceChild(replacingElement, replacedElement);
+
+          // re-do setup of smart_table, as it is probably inside the replaced element
+          SmartTable.setupSmartTableInScope(replaceableElementSelector);
+
+          // updates url (requires HTML5)
+          history.replaceState({}, "", url)
+
+          // fires "smart_table:ajax_update" event on document, in case there are
+          // custom user actions to be done
+          var ajaxUpdateEvent = new CustomEvent("smart_table:ajax_update", {
+            detail: {
+              replacedElementSelector: replaceableElementSelector
+            }
+          })
+          document.dispatchEvent(ajaxUpdateEvent);
+      }
+      else {
+          console.log("smart_table: xhr update failed. Response status: " + xhr.status);
+      }
+  };
+  xhr.send();
 }
 
 // Prepares table search field, so the table is refreshed when the field changes
-SmartTable.setupSmartTableSearch = function() {
+// scopeElement: scope under which all search fields will be setup. May be the document object
+SmartTable.setupSmartTableSearch = function(scopeElement) {
   // gets search text field
-  var smartTableSearch = document.getElementById('smart_table_search');
+  var smartTableSearch = scopeElement.getElementsByClassName('smart_table_search')[0];
   if (!smartTableSearch) return;
 
   // refreshes page every time search field changes
@@ -104,8 +187,9 @@ SmartTable.setupSmartTableSearch = function() {
 
 // Prepares table extra filters section, so the table is refreshed when the
 // any of the input fields are changed
-SmartTable.setupSmartTableExtraFilters = function() {
-  var smartTableExtraFilters = document.getElementById('smart_table_extra_filters');
+// scopeElement: scope under which all search fields will be setup. May be the document object
+SmartTable.setupSmartTableExtraFilters = function(scopeElement) {
+  var smartTableExtraFilters = scopeElement.getElementsByClassName('smart_table_extra_filters')[0];
   if (!smartTableExtraFilters) return;
 
   // all input fields
@@ -133,5 +217,23 @@ SmartTable.setupSmartTableExtraFilters = function() {
         }
       });
     }
+  }
+}
+
+// Prepares all links with data-smart-table-remote-link to trigger ajax requests
+// and replace part of the document only.
+// scopeElement: scope under which all search fields will be setup. May be the document object
+SmartTable.setupRemoteTableUpdate = function(scopeElement) {
+  var remoteLinkNodes = scopeElement.querySelectorAll('a.smart-table-link[data-smart-table-remote-link]');
+  if (remoteLinkNodes.length == 0) return;
+
+  // refreshes page every time any field changes
+  for (var i=0; i<remoteLinkNodes.length; i++) {
+    var linkNode = remoteLinkNodes[i];
+    linkNode.addEventListener('click', function(event) {
+      event.preventDefault();
+      SmartTable.ajaxUpdate(event.target.href, '.smart_table_remote_updatable_content');
+      return false;
+    });
   }
 }

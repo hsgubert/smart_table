@@ -8,5 +8,5 @@
 -%>
 
 <% unless current_page.last? %>
-  <%= link_to t('views.pagination.last').html_safe, url, class: 'last', :remote => remote %>
+  <%= link_to t('views.pagination.last').html_safe, url, class: 'last smart-table-link', data: {smart_table_remote_link: (remote if remote)} %>
 <% end %>

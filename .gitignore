@@ -10,4 +10,5 @@
 /spec/fixtures/schemas
 /tmp/
 .byebug_history
+.rspec_status
 smart_table-*.*.*.gem
