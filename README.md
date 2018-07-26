@@ -191,3 +191,5 @@ $(document).on('ready smart_table:ajax_update', function(event) {
   // do whatever here
 });
 ```
+
+Also, if you use turbolinks, consider listening to the event `turbolinks:load` too, so your javascript code will also run when the page is first loaded via a turbolinks visit.

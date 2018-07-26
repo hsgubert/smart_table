@@ -45,7 +45,7 @@ SmartTable.setupSmartTableInScope = function(selector) {
 // On page load, we setup all JS elements on the whole document
 SmartTable.onPageLoad(function(event) {
   SmartTable.setupSmartTableInScope();
-})
+});
 
 // Gets the current page url and merges some query parameters to this url. If a
 // certain parameter already exists, it is overwritten. If the value of the

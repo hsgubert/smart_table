@@ -38,7 +38,7 @@ module SmartTable
 
       html_elements << content_tag(:div, class: 'text-center') do
         # call to Kaminari view helper
-        page_entries_info(paginatable_array, entry_name: record_model_name.pluralize.downcase)
+        page_entries_info(paginatable_array, entry_name: record_model_name.pluralize(I18n.locale).downcase)
       end
 
       html_elements.join.html_safe
@@ -75,14 +75,15 @@ module SmartTable
       end
 
       link_url = current_request_url_with_merged_query_params(SORT_PARAM => "#{attribute} #{next_sort_order}")
-      link_to link_url, class: 'smart-table-link', data: {smart_table_remote_link: (true if get_cached_smart_table_params.remote)} do
+      link_class = "smart-table-link smart-table-sort-link smart-table-sort-link-#{attribute}"
+      link_to link_url, class: link_class, data: {smart_table_remote_link: (true if get_cached_smart_table_params.remote)} do
         text.html_safe + ' ' + (
           if current_sort_attribute == attribute && current_sort_order == 'asc'
-            "<span class='fa fa-sort-down'></span>".html_safe
+            "<span class='fa fa-sort-down smart-link-sort-arrow-asc'></span>".html_safe
           elsif current_sort_attribute == attribute && current_sort_order == 'desc'
-            "<span class='fa fa-sort-up'></span>".html_safe
+            "<span class='fa fa-sort-up smart-link-sort-arrow-desc'></span>".html_safe
           else
-            "<span class='fa fa-sort'></span>".html_safe
+            "<span class='fa fa-sort smart-link-sort-arrow-unsorted'></span>".html_safe
           end
         )
       end
@@ -124,7 +125,7 @@ module SmartTable
 
       content_tag(:div, class: 'text-center') do
         (
-          record_model_name.pluralize + ' ' +
+          record_model_name.pluralize(I18n.locale) + ' ' +
           I18n.t('smart_table.per_page') + ': ' +
           page_sizes.map do |page_size|
             human_page_size = (page_size == SHOW_ALL ? I18n.t('smart_table.show_all') : page_size.to_s)
