@@ -167,13 +167,14 @@ module SmartTable
     #       *Array.new(2, "%#{ActiveRecord::Base.sanitize_sql_like(smart_table_params.search)}%")
     #     )
 
-    def smart_table_search
+    def smart_table_search(class:nil)
       raise 'smart_table_params must be called on the controller, before using smart_table_search helper' unless get_cached_smart_table_params
 
       text_field_tag(
         SEARCH_PARAM,
         get_cached_smart_table_params.search,
-        type: 'search', placeholder: I18n.t('smart_table.search'), class: 'smart_table_search'
+        type: 'search', placeholder: I18n.t('smart_table.search'),
+        class: 'smart_table_search ' + binding.local_variable_get(:class).to_s # access to class variable must be done this way because 'class' is reserved
       )
     end
 
@@ -194,14 +195,14 @@ module SmartTable
     # You are responsible for using the parameters by yourself when loading the
     # records.
 
-    def smart_table_extra_filters(&block)
+    def smart_table_extra_filters(class:nil, &block)
       raise 'smart_table_params must be called on the controller, before using smart_table_extra_filters helper' unless get_cached_smart_table_params
 
       content = capture(&block)
       content_tag(:div,
         content,
         id: 'smart_table_extra_filters',
-        class: 'smart_table_extra_filters'
+        class: 'smart_table_extra_filters ' + binding.local_variable_get(:class).to_s # access to class variable must be done this way because 'class' is reserved
       )
     end
 
